@@ -55,8 +55,7 @@ class MaestroSignatureBuilder:
             raise ValueError(str(e).replace('AESGCM key', 'Secret Key'))
         encrypted_data = cipher.encrypt(
             nonce=iv, data=data_in_bytes, associated_data=None)
-        encrypted_data_with_iv = bytes(iv) + encrypted_data
-        return base64.b64encode(encrypted_data_with_iv)
+        return base64.b64encode(iv + encrypted_data)
 
     def get_signed_headers(self, async_request: bool = False,
                            compressed: bool = False) -> dict:
@@ -65,11 +64,8 @@ class MaestroSignatureBuilder:
         """
         date = int(time.time() * 1000)
         signature = hmac.new(
-            key=bytearray(f'{self._secret_key}{date}'.encode('utf-8')),
-            msg=bytearray(
-                f'M3-POST:{self._access_key}:{date}:{self._user}'.encode(
-                    'utf-8')
-                ),
+            key=f'{self._secret_key}{date}'.encode('utf-8'),
+            msg=f'M3-POST:{self._access_key}:{date}:{self._user}'.encode('utf-8'),
             digestmod=hashlib.sha256
         ).hexdigest()
         n = 2

@@ -5,9 +5,7 @@ import threading
 import urllib.parse
 import urllib.error
 from typing import Any
-from modular_sdk.commons import (
-    ModularException, generate_id, build_secure_message, build_message,
-)
+from modular_sdk.commons import ModularException, generate_id, build_message
 from modular_sdk.commons.constants import SUCCESS_STATUS
 from modular_sdk.commons.log_helper import get_logger
 from modular_sdk.services.impl.maestro_signature_builder import (
@@ -45,10 +43,9 @@ class MaestroHTTPTransport(AbstractTransport):
         self.timeout = timeout or HTTP_DEFAULT_RESPONSE_TIMEOUT
 
     def pre_process_request(self, command_name: str, parameters: list[dict] | dict,
-                            secure_parameters: list | None = None,
                             is_flat_request: bool = False,
                             async_request: bool = False,
-                            compressed: bool = False, config=None
+                            compressed: bool = False, config=None, **kwargs
                             ) -> tuple[bytes, dict]:
         request_id = generate_id()
         _LOG.debug('Going to pre-process HTTP request')
@@ -59,20 +56,10 @@ class MaestroHTTPTransport(AbstractTransport):
             is_flat_request=is_flat_request,
             compressed=compressed,
         )
-        secure_message = message
-        # todo that is strange because why uncompressed data
-        #  should lack parameters?
-        if not compressed:
-            secure_message = build_secure_message(
-                command_name=command_name,
-                parameters_to_secure=parameters,
-                secure_parameters=secure_parameters,
-                request_id=request_id,
-                is_flat_request=is_flat_request,
-            )
-        _LOG.debug(
-            f'Prepared command: {command_name}\nCommand format: {secure_message}'
-        )
+        _LOG.info(f'Going to send rabbit '
+                  f'request: {command_name=}, {request_id=}, '
+                  f'{is_flat_request=}')
+
         signer = MaestroSignatureBuilder(
             access_key=config.sdk_access_key if config and config.sdk_access_key else self.access_key,
             secret_key=config.sdk_secret_key if config and config.sdk_secret_key else self.secret_key,
@@ -114,15 +101,13 @@ class MaestroHTTPTransport(AbstractTransport):
         return code, status, data
 
     def send_sync(self, command_name: str, parameters: list[dict] | dict,
-                  secure_parameters: list | None = None,
                   is_flat_request: bool = False, async_request: bool = False,
-                  compressed: bool = False, config=None
+                  compressed: bool = False, config=None, **kwargs
                   ) -> tuple[int, str, Any]:
         _LOG.debug('Making sync http request ')
         message, headers = self.pre_process_request(
             command_name=command_name,
             parameters=parameters,
-            secure_parameters=secure_parameters,
             is_flat_request=is_flat_request,
             async_request=async_request,
             compressed=compressed,

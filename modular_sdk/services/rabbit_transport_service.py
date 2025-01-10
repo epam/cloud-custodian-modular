@@ -2,13 +2,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 from pika import exceptions
 from modular_sdk.commons import ModularException, generate_id_hex
-from modular_sdk.commons.constants import (
-    PLAIN_CONTENT_TYPE,
-    SUCCESS_STATUS,
-    ERROR_STATUS,
-    RESULTS,
-    DATA
-)  # todo remove these imports with major release. They can be used from outside
+from modular_sdk.commons.constants import PLAIN_CONTENT_TYPE
 from modular_sdk.commons.log_helper import get_logger
 
 if TYPE_CHECKING:

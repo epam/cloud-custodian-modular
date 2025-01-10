@@ -1,16 +1,8 @@
 import binascii
 import json
 from typing import Any
-from modular_sdk.commons import (
-    ModularException, generate_id, build_secure_message, build_message,
-)
-from modular_sdk.commons.constants import (
-    PLAIN_CONTENT_TYPE,
-    SUCCESS_STATUS,
-    ERROR_STATUS,
-    RESULTS,
-    DATA
-)  # todo remove these imports with major release. They can be used from outside
+from modular_sdk.commons import ModularException, generate_id, build_message
+from modular_sdk.commons.constants import SUCCESS_STATUS
 from modular_sdk.commons.log_helper import get_logger
 from modular_sdk.connections.rabbit_connection import RabbitMqConnection
 from modular_sdk.services.impl.maestro_signature_builder import (
@@ -48,9 +40,9 @@ class MaestroRabbitMQTransport(RabbitMQTransport):
         self.secret_key = config.sdk_secret_key
         self.user = config.maestro_user
 
-    def pre_process_request(self, command_name, parameters, secure_parameters,
+    def pre_process_request(self, command_name, parameters,
                             is_flat_request, async_request, compressed=False,
-                            config=None) -> tuple[str | bytes, dict]:
+                            config=None, **kwargs) -> tuple[str | bytes, dict]:
         request_id = generate_id()
         _LOG.debug('Going to pre-process request')
         message = build_message(
@@ -60,15 +52,9 @@ class MaestroRabbitMQTransport(RabbitMQTransport):
             is_flat_request=is_flat_request,
             compressed=compressed
         )
-        secure_message = message
-        if not compressed:
-            secure_message = build_secure_message(
-                command_name=command_name,
-                parameters_to_secure=parameters,
-                secure_parameters=secure_parameters,
-                request_id=request_id,
-                is_flat_request=is_flat_request
-            )
+        _LOG.info(f'Going to send rabbit '
+                  f'request: {command_name=}, {request_id=}, '
+                  f'{is_flat_request=}')
 
         signer = MaestroSignatureBuilder(
             access_key=config.sdk_access_key if config and config.sdk_access_key else self.access_key,
