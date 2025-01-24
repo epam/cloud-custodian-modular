@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from http import HTTPStatus
 
-from modular_sdk.commons import ModularException, RESPONSE_BAD_REQUEST_CODE
+from modular_sdk.commons import ModularException
 
 ALLOWED_MODES = ["LIVE", "MAINTENANCE", "TESTING"]
 
@@ -22,7 +23,7 @@ class AbstractOperationModeManager(AbstractOperationModeDescriber):
     def check_mode(self, mode):
         if mode not in ALLOWED_MODES:
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f"Wrong mode '{mode}' selected. Allowed modes are: "
                         f"'{ALLOWED_MODES}'"
             )

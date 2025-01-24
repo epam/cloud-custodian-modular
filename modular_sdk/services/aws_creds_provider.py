@@ -3,10 +3,8 @@ from typing import Optional
 import boto3
 from botocore.client import BaseClient
 from datetime import datetime, timedelta
-from botocore.config import Config
 
 from modular_sdk.modular import Modular
-from modular_sdk.commons.constants import Env
 from modular_sdk.commons.time_helper import utc_datetime
 from functools import cached_property
 

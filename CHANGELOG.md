@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.0] - 2024-12-18
+- Rewritten Pynamo & Mongo abstraction to support all attributes and functionality:
+  - `modular_sdk.models.pynamongo.models.Model` must be used instead of old BaseModel (see docs inside `modular_sdk.models.pynamongo.__init__`)
+  - `get_json()` is not deprecated and will be removed. Use pynamongo.convertors.instance_to_dict or write your serializer
+  - `mongo_id` attribute was replaced with `__mongo_id__`
+- Updated `pymongo` version to `pymongo~=4.10.1`
+- Removed `dynamodb-json~=1.4.2` package
+- Removed variables, functions, classes and modules:
+  - `modular_sdk.commons.DynamoDBJsonSerializer`
+  - `modular_sdk.commons.build_response`
+  - `modular_sdk.commons.RESPONSE_*`
+  - `modular_sdk.commons.dict_without`
+  - `modular_sdk.commons.error_helper`
+  - `modular_sdk.commons.deep_pop`
+  - `modular_sdk.helpers`
+  - `modular_sdk.models.pynamodb_extension`
+  - `modular_sdk.connections.mongodb_connection`
+- Added:
+  - `modular_sdk.models.pynamongo.index_creator.IndexCreator`
+
 ## [6.3.0] - 2024-11-26
 - Fix Vault parameters encoder to comply with Maestro format
 - Update `get_signed_headers` to support conditional handling of `http` and

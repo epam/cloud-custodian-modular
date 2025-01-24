@@ -1,12 +1,12 @@
 from pynamodb.attributes import UnicodeAttribute
 
 from modular_sdk.models.base_meta import BaseMeta
-from modular_sdk.models.pynamodb_extension.base_model import DynamicAttribute
-from modular_sdk.models.pynamodb_extension.base_role_access_model import \
-    BaseRoleAccessModel
+from modular_sdk.models.pynamongo.models import ModularBaseModel
+
+from modular_sdk.models.pynamongo.attributes import DynamicAttribute
 
 
-class Setting(BaseRoleAccessModel):
+class Setting(ModularBaseModel):
     class Meta(BaseMeta):
         table_name = 'Settings'
 

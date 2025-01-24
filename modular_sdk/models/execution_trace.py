@@ -2,13 +2,13 @@ from pynamodb.attributes import UnicodeAttribute, \
     UTCDateTimeAttribute, NumberAttribute
 from pynamodb.indexes import AllProjection
 
-from modular_sdk.models.pynamodb_extension.base_role_access_model import \
-    BaseRoleAccessModel
+from pynamodb.indexes import GlobalSecondaryIndex
+from modular_sdk.models.pynamongo.models import ModularBaseModel
+
 from modular_sdk.models.base_meta import BaseMeta
-from modular_sdk.models.pynamodb_extension.base_model import BaseGSI
 
 
-class SegmentIndex(BaseGSI):
+class SegmentIndex(GlobalSecondaryIndex):
     class Meta(BaseMeta):
         index_name = 'segment-index'
         read_capacity_units = 1
@@ -19,7 +19,7 @@ class SegmentIndex(BaseGSI):
     execution_id = UnicodeAttribute(range_key=True)
 
 
-class ExecutionTrace(BaseRoleAccessModel):
+class ExecutionTrace(ModularBaseModel):
     class Meta(BaseMeta):
         table_name = 'ExecutionTraces'
 

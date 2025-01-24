@@ -2,13 +2,13 @@ from pynamodb.attributes import UnicodeAttribute, MapAttribute, \
     UTCDateTimeAttribute
 from pynamodb.indexes import AllProjection
 
-from modular_sdk.models.pynamodb_extension.base_model import BaseGSI
-from modular_sdk.models.pynamodb_extension.base_role_access_model import \
-    BaseRoleAccessModel
+from pynamodb.indexes import GlobalSecondaryIndex
+from modular_sdk.models.pynamongo.models import ModularBaseModel
+
 from modular_sdk.models.base_meta import BaseMeta
 
 
-class JobStartedAtIndex(BaseGSI):
+class JobStartedAtIndex(GlobalSecondaryIndex):
     class Meta:
         index_name = "job-started_at-index"
         read_capacity_units = 1
@@ -19,7 +19,7 @@ class JobStartedAtIndex(BaseGSI):
     started_at = UnicodeAttribute(range_key=True)
 
 
-class Job(BaseRoleAccessModel):
+class Job(ModularBaseModel):
     class Meta(BaseMeta):
         table_name = 'ModularJobs'
 

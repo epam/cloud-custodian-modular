@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modular_sdk"
-version = "6.3.0"
+version = "7.0.0"
 authors = [
     {name = "EPAM Systems", email = "support@syndicate.team"}
 ]
@@ -23,10 +23,9 @@ dependencies = [
     "pynamodb>=5.5.1,<6",
     "boto3>=1.26.80,<1.35",
     "botocore>=1.29.80,<1.35",
-    "pymongo~=4.5.0",
+    "pymongo~=4.10.1",
     "python-dateutil>=2.8.2,<3.0",
     "cachetools~=5.4.0",
-    "dynamodb-json~=1.4.2",
     "aws-xray-sdk~=2.14.0"
 ]
 
@@ -48,6 +47,16 @@ namespaces = false
 cryptography = [
     "cryptography~=41.0.7"
 ]
+test = [
+    "pytest>=8.3.2",
+    "mongomock>=4",
+]
+
+
+[tool.pytest.ini_options]
+pythonpath = ["modular_sdk"]
+testpaths = ["tests"]
+
 
 [tool.pyright]
 include = ["modular_sdk/"]
@@ -57,6 +66,15 @@ exclude = [
 pythonVersion = "3.10"
 reportIncompatibleMethodOverride = "warning"
 executionEnvironments = [
-    {root = "tests/", pythonVersion = "3.10", extraPaths = ["modular_sdk/"]}
+    {root = "tests/", pythonVersion = "3.10", extraPaths = ["./"]}
 ]
+
+[tool.ruff]
+line-length = 79
+src = ["modular_sdk", "tests"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
 

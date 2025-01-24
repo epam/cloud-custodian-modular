@@ -1,10 +1,8 @@
 from pynamodb.attributes import UnicodeAttribute
 
+from modular_sdk.models.pynamongo.models import ModularBaseModel
 from modular_sdk.models.base_meta import BaseMeta, TABLES_PREFIX
-from modular_sdk.models.pynamodb_extension.base_model import DynamicAttribute
-from modular_sdk.models.pynamodb_extension.base_role_access_model import (
-    BaseRoleAccessModel,
-)
+from modular_sdk.models.pynamongo.attributes import DynamicAttribute
 
 
 CUSTOMER_NAME = 'cn'
@@ -14,8 +12,7 @@ VALUE = 'v'
 MODULAR_CUSTOMER_SETTINGS_TABLE_NAME = 'CustomerSettings'
 
 
-
-class CustomerSettings(BaseRoleAccessModel):
+class CustomerSettings(ModularBaseModel):
     class Meta(BaseMeta):
         table_name = f'{TABLES_PREFIX}{MODULAR_CUSTOMER_SETTINGS_TABLE_NAME}'
 

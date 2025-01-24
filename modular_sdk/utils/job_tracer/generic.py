@@ -1,9 +1,9 @@
 from datetime import datetime
 from modular_sdk.commons.constants import JOB_RUNNING_STATE, JOB_FAIL_STATE, \
     JOB_SUCCESS_STATE
+from http import HTTPStatus
 
-from modular_sdk.commons import ModularException, RESPONSE_BAD_REQUEST_CODE, \
-    RESPONSE_FORBIDDEN_CODE
+from modular_sdk.commons import ModularException
 
 from modular_sdk.commons.log_helper import get_logger
 from modular_sdk.services.environment_service import EnvironmentService
@@ -47,7 +47,7 @@ class ModularJobTracer(AbstractJobTracer):
                                       f'due to unappropriated mode'
         _LOG.error(unappropriated_mode_message)
         raise ModularException(
-            code=RESPONSE_FORBIDDEN_CODE,
+            code=HTTPStatus.FORBIDDEN.value,
             content=unappropriated_mode_message
         )
 
@@ -62,7 +62,7 @@ class ModularJobTracer(AbstractJobTracer):
 
             _LOG.error(job_invalid_state_message)
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=job_invalid_state_message
             )
         return job_item

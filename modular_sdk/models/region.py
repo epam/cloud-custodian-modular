@@ -1,11 +1,11 @@
 from pynamodb.attributes import UnicodeAttribute, MapAttribute, ListAttribute, AttributeContainer
 from pynamodb.indexes import AllProjection
 
+from pynamodb.indexes import GlobalSecondaryIndex
+from modular_sdk.models.pynamongo.models import ModularBaseModel
+
 from modular_sdk.models.base_meta import BaseMeta, TABLES_PREFIX
-from modular_sdk.models.pynamodb_extension.base_model import M3BooleanAttribute, \
-    BaseGSI
-from modular_sdk.models.pynamodb_extension.base_role_access_model import \
-    BaseRoleAccessModel
+from modular_sdk.models.pynamongo.attributes import M3BooleanAttribute
 
 REGION_CLOUD = 'c'
 REGION_NATIVE_NAME = 'nn'
@@ -47,7 +47,7 @@ class BaseRegion(AttributeContainer):
     is_unreachable = M3BooleanAttribute(attr_name=UNREACHABLE, null=True)
 
 
-class NativeNameCloudIndex(BaseGSI):
+class NativeNameCloudIndex(GlobalSecondaryIndex):
     class Meta(BaseMeta):
         index_name = f'{REGION_NATIVE_NAME}-{REGION_CLOUD}-index'
         read_capacity_units = 1
@@ -58,7 +58,7 @@ class NativeNameCloudIndex(BaseGSI):
     cloud = UnicodeAttribute(attr_name=REGION_CLOUD, range_key=True)
 
 
-class RegionModel(BaseRoleAccessModel, BaseRegion):
+class RegionModel(ModularBaseModel, BaseRegion):
     class Meta(BaseMeta):
         table_name = f'{TABLES_PREFIX}{MODULAR_REGIONS_TABLE_NAME}'
 

@@ -3,9 +3,8 @@ from pynamodb.attributes import UnicodeAttribute, BooleanAttribute, \
 from pynamodb.indexes import AllProjection
 
 from modular_sdk.models.base_meta import BaseMeta, TABLES_PREFIX
-from modular_sdk.models.pynamodb_extension.base_model import BaseGSI
-from modular_sdk.models.pynamodb_extension.base_role_access_model import \
-    BaseRoleAccessModel
+from pynamodb.indexes import GlobalSecondaryIndex
+from modular_sdk.models.pynamongo.models import ModularBaseModel
 
 APPLICATION_ID = 'aid'
 CUSTOMER_ID = 'cid'
@@ -24,7 +23,7 @@ CREATED_BY = 'cb'
 MODULAR_APPLICATIONS_TABLE_NAME = 'Applications'
 
 
-class CustomerIdTypeIndex(BaseGSI):
+class CustomerIdTypeIndex(GlobalSecondaryIndex):
     class Meta(BaseMeta):
         index_name = f"{CUSTOMER_ID}-{TYPE}-index"
         read_capacity_units = 1
@@ -35,7 +34,7 @@ class CustomerIdTypeIndex(BaseGSI):
     type = UnicodeAttribute(range_key=True, attr_name=TYPE)
 
 
-class Application(BaseRoleAccessModel):
+class Application(ModularBaseModel):
     class Meta(BaseMeta):
         table_name = f'{TABLES_PREFIX}{MODULAR_APPLICATIONS_TABLE_NAME}'
 

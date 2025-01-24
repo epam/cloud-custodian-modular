@@ -1,16 +1,15 @@
-from typing import Optional, Iterator, List
+from typing import Optional, List
 from pynamodb.expressions.condition import Condition
+from http import HTTPStatus
 
 from pynamodb.pagination import ResultIterator
-from modular_sdk.commons import RESPONSE_BAD_REQUEST_CODE, \
-    RESPONSE_RESOURCE_NOT_FOUND_CODE, generate_id, default_instance
+from modular_sdk.commons import generate_id, default_instance
 from modular_sdk.commons.constants import AVAILABLE_APPLICATION_TYPES, \
     ApplicationType
 from modular_sdk.commons.exception import ModularException
 from modular_sdk.commons.log_helper import get_logger
 from modular_sdk.commons.time_helper import utc_datetime
 from modular_sdk.models.application import Application
-from modular_sdk.modular import Modular
 from modular_sdk.services.customer_service import CustomerService
 
 _LOG = get_logger(__name__)
@@ -30,14 +29,14 @@ class ApplicationService:
             _LOG.error(f'Invalid application type specified. Available '
                        f'options: \'{AVAILABLE_APPLICATION_TYPES}\'')
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'Invalid application type specified. Available '
                         f'options: \'{AVAILABLE_APPLICATION_TYPES}\''
             )
         if not self.customer_service.get(name=customer_id):
             _LOG.error(f'Customer with name \'{customer_id}\' does not exist.')
             raise ModularException(
-                code=RESPONSE_RESOURCE_NOT_FOUND_CODE,
+                code=HTTPStatus.NOT_FOUND.value,
                 content=f'Customer with name \'{customer_id}\' does not exist.'
             )
         return Application(

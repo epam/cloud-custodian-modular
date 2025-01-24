@@ -4,11 +4,11 @@ from pynamodb.attributes import UnicodeAttribute, MapAttribute, \
     BooleanAttribute, NumberAttribute
 from pynamodb.indexes import AllProjection
 
+from pynamodb.indexes import GlobalSecondaryIndex
+from modular_sdk.models.pynamongo.models import ModularBaseModel
+
 from modular_sdk.commons.constants import COMPOUND_KEYS_SEPARATOR, ParentScope
 from modular_sdk.models.base_meta import BaseMeta, TABLES_PREFIX
-from modular_sdk.models.pynamodb_extension.base_model import BaseGSI
-from modular_sdk.models.pynamodb_extension.base_role_access_model import \
-    BaseRoleAccessModel
 
 PARENT_ID = 'pid'
 CUSTOMER_ID = 'cid'
@@ -28,7 +28,7 @@ CREATED_BY = 'cb'
 MODULAR_PARENTS_TABLE_NAME = 'Parents'
 
 
-class CustomerIdScopeIndex(BaseGSI):
+class CustomerIdScopeIndex(GlobalSecondaryIndex):
     class Meta(BaseMeta):
         index_name = f'{CUSTOMER_ID}-{SCOPE_ATTR}-index'
         read_capacity_units = 1
@@ -40,7 +40,7 @@ class CustomerIdScopeIndex(BaseGSI):
 
 
 # this index currently does not exist. It's for the future :)
-class ApplicationIdIndex(BaseGSI):
+class ApplicationIdIndex(GlobalSecondaryIndex):
     class Meta(BaseMeta):
         index_name = f'{APPLICATION_ID}-index'
         read_capacity_units = 1
@@ -50,7 +50,7 @@ class ApplicationIdIndex(BaseGSI):
     application_id = UnicodeAttribute(hash_key=True, attr_name=APPLICATION_ID)
 
 
-class Parent(BaseRoleAccessModel):
+class Parent(ModularBaseModel):
     class Meta(BaseMeta):
         table_name = f'{TABLES_PREFIX}{MODULAR_PARENTS_TABLE_NAME}'
 
@@ -76,7 +76,6 @@ class Parent(BaseRoleAccessModel):
 
     customer_id_scope_index = CustomerIdScopeIndex()
     application_id_index = ApplicationIdIndex()
-
     # todo use if self.type is removed
     # @property
     # def type(self) -> str:

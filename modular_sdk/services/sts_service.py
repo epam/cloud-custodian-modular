@@ -11,7 +11,7 @@ from modular_sdk.commons.constants import MODULAR_AWS_ACCESS_KEY_ID_ENV, \
     MODULAR_AWS_SESSION_TOKEN_ENV, MODULAR_AWS_SECRET_ACCESS_KEY_ENV, \
     MODULAR_AWS_CREDENTIALS_EXPIRATION_ENV
 from modular_sdk.commons.log_helper import get_logger
-from modular_sdk.commons.time_helper import utc_datetime
+from modular_sdk.commons.time_helper import utc_datetime, utc_iso
 from modular_sdk.services.aws_creds_provider import AWSCredentialsProvider
 from modular_sdk.services.environment_service import EnvironmentService
 
@@ -128,7 +128,7 @@ class StsService(AWSCredentialsProvider):
             'aws_access_key_id': creds.get('AccessKeyId'),
             'aws_secret_access_key': creds.get('SecretAccessKey'),
             'aws_session_token': creds.get('SessionToken'),
-            'expiration': creds.get('Expiration')  # datetime UTC
+            'expiration': creds.get('Expiration')
         }
 
     def assume_roles_default_payloads(self, roles: List[str],
@@ -147,7 +147,9 @@ class StsService(AWSCredentialsProvider):
         :param roles:
         :return:
         """
-        session = lambda: f'{session_name}-{time()}' if session_name else None
+        def session():
+            return f'{session_name}-{time()}' if session_name else None
+
         n = len(roles)
         for i, role in enumerate(roles):
             if not self.is_role_arn(role):
@@ -171,21 +173,21 @@ class StsService(AWSCredentialsProvider):
             return False
         ex = self._environment_service.modular_aws_credentials_expiration()
         in_a_while = utc_datetime() + timedelta(minutes=5)
-        if not ex or in_a_while > datetime.fromisoformat(ex):
+        if not ex or in_a_while > utc_datetime(ex):
             _LOG.info(f'Role {roles[-1]} has not been assumed or has expired. '
                       f'Reassuming the chain: {roles}')
             creds = self.assume_roles_chain(
                 list(self.assume_roles_default_payloads(roles))
             )
-            _LOG.debug(f'Credentials received successfully. '
-                       f'Setting them to envs')
+            _LOG.debug('Credentials received successfully. '
+                       'Setting them to envs')
             ak, sk = creds['aws_access_key_id'], creds['aws_secret_access_key']
             st = creds['aws_session_token']
             self._environment_service.set(MODULAR_AWS_ACCESS_KEY_ID_ENV, ak)
             self._environment_service.set(MODULAR_AWS_SECRET_ACCESS_KEY_ENV, sk)
             self._environment_service.set(MODULAR_AWS_SESSION_TOKEN_ENV, st)
             self._environment_service.set(MODULAR_AWS_CREDENTIALS_EXPIRATION_ENV,
-                                          creds['expiration'].isoformat())
+                                          utc_iso(creds['expiration']))
             return True
         else:
             return False

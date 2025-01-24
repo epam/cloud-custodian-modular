@@ -1,6 +1,7 @@
 import datetime
+from http import HTTPStatus
 
-from modular_sdk.commons import ModularException, RESPONSE_RESOURCE_NOT_FOUND_CODE
+from modular_sdk.commons import ModularException
 from modular_sdk.models.operation_mode import OperationMode
 from modular_sdk.utils.operation_mode.abstract import AbstractOperationModeDescriber
 from modular_sdk.services.environment_service import EnvironmentService
@@ -19,13 +20,13 @@ class ModularOperationModeManagerService(AbstractOperationModeDescriber):
             application_name = self.environment_service.application()
             if not application_name:
                 raise ModularException(
-                    code=RESPONSE_RESOURCE_NOT_FOUND_CODE,
+                    code=HTTPStatus.NOT_FOUND.value,
                     content="Missing environment variable 'application_name'"
                 )
         app = self.get_application(application_name=application_name)
         if not app:
             raise ModularException(
-                code=RESPONSE_RESOURCE_NOT_FOUND_CODE,
+                code=HTTPStatus.NOT_FOUND.value,
                 content=f"No such component: '{application_name}'"
             )
         result = {

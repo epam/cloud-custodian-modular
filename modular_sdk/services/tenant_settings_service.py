@@ -1,8 +1,9 @@
 from typing import Optional
+from http import HTTPStatus
 
 from pynamodb.pagination import ResultIterator
 
-from modular_sdk.commons import RESPONSE_BAD_REQUEST_CODE, deprecated
+from modular_sdk.commons import deprecated
 from modular_sdk.commons.exception import ModularException
 from modular_sdk.models.tenant_settings import TenantSettings
 
@@ -53,7 +54,7 @@ class TenantSettingsService:
 
         if not tenant_item:
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'Tenant with name {tenant} is not found'
             )
         # TODO what is wrong with this method?

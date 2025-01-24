@@ -1,9 +1,9 @@
 import json
 import os
 import re
+from http import HTTPStatus
 
 from modular_sdk.commons import ModularException
-from modular_sdk.commons.error_helper import RESPONSE_BAD_REQUEST_CODE
 from modular_sdk.commons.log_helper import get_logger
 from modular_sdk.models.setting import Setting
 
@@ -24,7 +24,7 @@ class SettingsManagementService:
         )
         if self.describe_setting_item(setting_key=setting_key):
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'{setting_key} setting already exists. Please use '
                         f'\'update\' command instead.'
             )
@@ -42,7 +42,7 @@ class SettingsManagementService:
         )
         if not self.describe_setting_item(setting_key=setting_key):
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'{setting_key} setting does not exist. Please use '
                         f'\'add\' command first.'
             )
@@ -68,7 +68,7 @@ class SettingsManagementService:
         self._validate_setting_key(setting_key)
         if not Setting.get_nullable(setting_key):
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'{setting_key} setting not found.'
             )
         Setting(name=setting_key).delete()
@@ -78,7 +78,7 @@ class SettingsManagementService:
         if not re.match(regex, setting_key):
             _LOG.error('Invalid setting name')
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'{setting_key} setting does not belongs to '
                         f'{self.group_name} group'
             )
@@ -126,7 +126,7 @@ class SettingsManagementService:
     def __process_boolean_value(setting_value):
         if setting_value.lower() not in ('true', 'false'):
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'Setting name matches to the one from the following '
                         f'patterns: *_IS_* / *_ARE_* / *_ENABLED / *_DISABLED / '
                         f'*_ACTIVE / *_RUNNING / *_AVAILABLE{os.linesep}'
@@ -144,7 +144,7 @@ class SettingsManagementService:
                 setting_value
         ):
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'Setting name matches to the pattern: *_MAIL{os.linesep}'
                         f'Invalid email provided, check spelling.'
             )
@@ -168,7 +168,7 @@ class SettingsManagementService:
             return int(setting_value)
         except (TypeError, ValueError, OSError):
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'Setting name matches to the pattern: *_EXPIRATION{os.linesep}'
                         f'Invalid value provided for expiration setting. '
                         f'Expected EPOCH milliseconds format, 13 digits, '
@@ -185,7 +185,7 @@ class SettingsManagementService:
             return setting_value
         except AssertionError:
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'Setting name matches to the pattern: *_URL{os.linesep}'
                         f'Invalid value provided for URL link, check spelling. '
                         f'Format: <$protocol>://<$net_location>'
@@ -198,7 +198,7 @@ class SettingsManagementService:
             return setting_value
         except (TypeError, ValueError):
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'Setting name matches to the one from the following '
                         f'patterns: *_COUNT, *_THRESHOLD, *_LONG, *_INT{os.linesep}'
                         f'Invalid value provided. Expected integer value.'
@@ -212,7 +212,7 @@ class SettingsManagementService:
             result = json.loads(setting_value)
         except json.JSONDecodeError:
             raise ModularException(
-                code=RESPONSE_BAD_REQUEST_CODE,
+                code=HTTPStatus.BAD_REQUEST.value,
                 content=f'Setting name matches to the one from the following '
                         f'patterns: *_JSON / *_MAP / *_MAPPING{os.linesep}'
                         f'Value format is \'Escaped string\'.{os.linesep}'

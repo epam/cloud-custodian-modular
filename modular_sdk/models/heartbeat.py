@@ -1,12 +1,12 @@
 from pynamodb.attributes import UnicodeAttribute, MapAttribute, \
     UTCDateTimeAttribute
 
-from modular_sdk.models.pynamodb_extension.base_role_access_model import \
-    BaseRoleAccessModel
+from modular_sdk.models.pynamongo.models import ModularBaseModel
+
 from modular_sdk.models.base_meta import BaseMeta
 
 
-class Heartbeat(BaseRoleAccessModel):
+class Heartbeat(ModularBaseModel):
     class Meta(BaseMeta):
         table_name = 'Heartbeats'
 

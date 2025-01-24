@@ -1,6 +1,7 @@
 import os
 
 from modular_sdk.commons import validate_params, SingletonMeta
+from modular_sdk.commons.time_helper import utc_iso
 from modular_sdk.commons.constants import SERVICE_MODE_DOCKER, \
     MODULAR_SERVICE_MODE_ENV, \
     PARAM_MONGO_DB_NAME, PARAM_MONGO_URL, PARAM_MONGO_PASSWORD, \
@@ -58,7 +59,7 @@ class Modular(metaclass=SingletonMeta):
             os.environ[MODULAR_AWS_SESSION_TOKEN_ENV] = assumed_credentials[
                 'aws_session_token']
             os.environ[MODULAR_AWS_CREDENTIALS_EXPIRATION_ENV] = \
-                assumed_credentials['expiration'].isoformat()
+                utc_iso(assumed_credentials['expiration'])
             os.environ[PARAM_ASSUME_ROLE_ARN] = assume_role_arn
         elif service_mode == SERVICE_MODE_DOCKER:
             required_mongodb_attrs = (

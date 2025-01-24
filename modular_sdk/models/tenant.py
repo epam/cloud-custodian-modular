@@ -2,17 +2,14 @@ from typing import Optional
 
 from pynamodb.attributes import (UnicodeAttribute, ListAttribute, MapAttribute)
 from pynamodb.indexes import AllProjection
+from pynamodb.indexes import GlobalSecondaryIndex
+from modular_sdk.models.pynamongo.models import ModularBaseModel
+
 
 from modular_sdk.commons.constants import ALLOWED_TENANT_PARENT_MAP_KEYS
 from modular_sdk.models.base_meta import BaseMeta, TABLES_PREFIX
-from modular_sdk.models.pynamodb_extension.base_model import M3BooleanAttribute, \
-    BaseGSI
-from modular_sdk.models.pynamodb_extension.base_role_access_model import \
-    BaseRoleAccessModel
 from modular_sdk.models.region import RegionAttr
-
-CREDENTIALS_FORMAT_ERROR_PATTERN = 'Credentials was not fully registered ' \
-                                   'for tenant {0}: {1} is absent'
+from modular_sdk.models.pynamongo.attributes import M3BooleanAttribute
 
 TENANT_NAME = 'n'
 MANAGEMENT_PARENT_ID = 'mpid'
@@ -48,7 +45,7 @@ class Contacts(MapAttribute):
                                      null=True)
 
 
-class DisplayNameToLowerCloudIndex(BaseGSI):
+class DisplayNameToLowerCloudIndex(GlobalSecondaryIndex):
     """
     This class represents a Tenant display name + Cloud global secondary index
     """
@@ -64,7 +61,7 @@ class DisplayNameToLowerCloudIndex(BaseGSI):
     cloud = UnicodeAttribute(attr_name=CLOUD, range_key=True)
 
 
-class ProjectIndex(BaseGSI):
+class ProjectIndex(GlobalSecondaryIndex):
     """
     This class represents a Project global secondary index
     """
@@ -78,7 +75,7 @@ class ProjectIndex(BaseGSI):
     project = UnicodeAttribute(attr_name=GENERAL_PROJECT_ID, hash_key=True)
 
 
-class CustomerNameIndex(BaseGSI):
+class CustomerNameIndex(GlobalSecondaryIndex):
     class Meta(BaseMeta):
         index_name = f"{CUSTOMER_NAME}-index"
         read_capacity_units = 1
@@ -88,7 +85,7 @@ class CustomerNameIndex(BaseGSI):
     customer_name = UnicodeAttribute(hash_key=True, attr_name=CUSTOMER_NAME)
 
 
-class Tenant(BaseRoleAccessModel):
+class Tenant(ModularBaseModel):
     class Meta(BaseMeta):
         table_name = f'{TABLES_PREFIX}{MODULAR_TENANTS_TABLE_NAME}'
 
